@@ -1,0 +1,982 @@
+﻿
+
+
+================================================
+Start: SPL PRD Encryption Setup
+================================================
+
+
+lxsplmdbpsgv080:
+#########################################################
+# Data-at-rest (TDE) encryption-specific settings
+#########################################################
+
+plugin_load_add = file_key_management
+file_key_management_filename = /pmariadb/mariadb.6033/DEK.enc
+file_key_management_filekey = FILE:/pmariadb/mariadb.6033/KEK.key
+file_key_management_encryption_algorithm = AES_CTR
+#innodb_encrypt_tables = OFF
+innodb_encrypt_tables = ON
+innodb_encryption_threads = 4
+innodb_encryption_rotate_key_age = 1
+innodb_encrypt_temporary_tables = ON
+#innodb_encrypt_temporary_tables = OFF
+innodb_encrypt_log = ON
+#innodb_encrypt_log = OFF
+encrypt_binlog = ON
+#encrypt_binlog = OFF
+
+
+########################################################
+# Data-in-transit encryption (TLS/SSL)
+########################################################
+ssl_cert=/pmariadb/mariadb.6033/ssl/idtpmdbenc.pem
+ssl_key=/pmariadb/mariadb.6033/ssl/idtpmdbenc_key.key
+ssl_ca=/pmariadb/mariadb.6033/ssl/ca-cert.pem
+require_secure_transport=ON
+#require_secure_transport=OFF
+
+
+lxsplmdbpsgv081:
+#########################################################
+# Data-at-rest (TDE) encryption-specific settings
+#########################################################
+plugin_load_add = file_key_management
+file_key_management_filename = /pmariadb/mariadb.6033/DEK.enc
+file_key_management_filekey = FILE:/pmariadb/mariadb.6033/KEK.key
+file_key_management_encryption_algorithm = AES_CTR
+#innodb_encrypt_tables = OFF
+innodb_encrypt_tables = ON
+innodb_encryption_threads = 4
+innodb_encryption_rotate_key_age = 1
+innodb_encrypt_temporary_tables = ON
+#innodb_encrypt_temporary_tables = OFF
+innodb_encrypt_log = ON
+#innodb_encrypt_log = OFF
+encrypt_binlog = ON
+#encrypt_binlog = OFF
+
+########################################################
+# Data-in-transit encryption (TLS/SSL)
+########################################################
+ssl_cert=/pmariadb/mariadb.6033/ssl/idtpmdbenc.pem
+ssl_key=/pmariadb/mariadb.6033/ssl/idtpmdbenc_key.key
+ssl_ca=/pmariadb/mariadb.6033/ssl/ca-cert.pem
+require_secure_transport=ON
+#require_secure_transport=OFF
+
+
+
+
+
+lxsplmdbpsgv078:
+###############################################################
+## Server definitions
+###############################################################
+
+[Server1]
+type=server
+address=xxx.xxx.xxx.xxx
+port=6033
+protocol=MariaDBBackend
+ssl=true
+ssl_cert=/app/maxscale/ssl/idtpmaxenc.pem
+ssl_key=/app/maxscale/ssl/idtpmaxenc_key.key
+ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+[Server2]
+type=server
+address=xxx.xxx.xxx.xxx
+port=6033
+protocol=MariaDBBackend
+ssl=true
+ssl_cert=/app/maxscale/ssl/idtpmaxenc.pem
+ssl_key=/app/maxscale/ssl/idtpmaxenc_key.key
+ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+
+###############################################################
+## Listener definitions
+###############################################################
+
+[Read-Write-Listener]
+type=listener
+service=Read-Write-Service
+protocol=MariaDBClient
+port=6034
+ssl=true
+ssl_cert=/app/maxscale/ssl/idtpmaxenc.pem
+ssl_key=/app/maxscale/ssl/idtpmaxenc_key.key
+ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+[Read-Only-Listener]
+type=listener
+service=Read-Only-Service
+protocol=MariaDBClient
+port=6035
+ssl=true
+ssl_cert=/app/maxscale/ssl/idtpmaxenc.pem
+ssl_key=/app/maxscale/ssl/idtpmaxenc_key.key
+ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+
+lxsplmdbpsgv079:
+###############################################################
+## Server definitions
+###############################################################
+
+[Server1]
+type=server
+address=xxx.xxx.xxx.xxx
+port=6033
+protocol=MariaDBBackend
+ssl=true
+ssl_cert=/app/maxscale/ssl/idtpmaxenc.pem
+ssl_key=/app/maxscale/ssl/idtpmaxenc_key.key
+ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+[Server2]
+type=server
+address=xxx.xxx.xxx.xxx
+port=6033
+protocol=MariaDBBackend
+ssl=true
+ssl_cert=/app/maxscale/ssl/idtpmaxenc.pem
+ssl_key=/app/maxscale/ssl/idtpmaxenc_key.key
+ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+###############################################################
+## Listener definitions
+###############################################################
+
+[Read-Write-Listener]
+type=listener
+service=Read-Write-Service
+protocol=MariaDBClient
+port=xxxx
+ssl=true
+ssl_cert=/app/maxscale/ssl/idtpmdbenc.pem
+ssl_key=/app/maxscale/ssl/idtpmdbenc_key.key
+ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+[Read-Only-Listener]
+type=listener
+service=Read-Only-Service
+protocol=MariaDBClient
+port=xxxx
+ssl=true
+ssl_cert=/app/maxscale/ssl/idtpmdbenc.pem
+ssl_key=/app/maxscale/ssl/idtpmdbenc_key.key
+ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+
+
+================================================
+End: SPL PRD Encryption Setup
+================================================
+
+
+
+================================================
+Start: SPL UAT Encryption Setup
+================================================
+
+Servers:
+LXSPLMDBUSGV078	ENT	UAT-MX
+LXSPLMDBUSGV079	ENT	UAT-MX
+-->LXSPLMDBUSGV080	ENT	UAT-DB		xxx.xxx.xxx.xxx
+-->LXSPLMDBUSGV081	ENT	UAT-DB		xxx.xxx.xxx.xxx
+
+
+###########################################################################
+Start: MariaDB TLS/SSL encryption
+###########################################################################
+Notes:
+1. GIS will provide certs/keys
+2. Turn OFF require_secure_transport in master before starting slave in replica
+
+
+Configure MariaDB:
+
+	lxsplmdbusgv080:
+		########################################################
+		# Data-in-transit encryption (TLS/SSL)
+		########################################################
+		ssl_cert=/pmariadb/mariadb.6033/ssl/idtumdbenc.pem
+		ssl_key=/pmariadb/mariadb.6033/ssl/idtumdbenc_key.key
+		ssl_ca=/pmariadb/mariadb.6033/ssl/ca-cert.pem
+		require_secure_transport=ON
+		#require_secure_transport=OFF
+
+	lxsplmdbusgv081:
+		########################################################
+		# Data-in-transit encryption (TLS/SSL)
+		########################################################
+		ssl_cert=/pmariadb/mariadb.6033/ssl/idtumdbenc.pem
+		ssl_key=/pmariadb/mariadb.6033/ssl/idtumdbenc_key.key
+		ssl_ca=/pmariadb/mariadb.6033/ssl/ca-cert.pem
+		require_secure_transport=ON
+		#require_secure_transport=OFF
+
+
+Configure MaxScale:
+
+	lxsplmdbusgv078:
+		###############################################################
+		## Server definitions
+		###############################################################
+		[Server1]
+		type=server
+		address=xxx.xxx.xxx.xxx
+		port=xxxx
+		protocol=MariaDBBackend
+		ssl=true
+		ssl_cert=/app/maxscale/ssl/idtumaxenc.pem
+		ssl_key=/app/maxscale/ssl/idtumaxenc_key.key
+		ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+		[Server2]
+		type=server
+		address=xxx.xxx.xxx.xxx
+		port=xxxx
+		protocol=MariaDBBackend
+		ssl=true
+		ssl_cert=/app/maxscale/ssl/idtumaxenc.pem
+		ssl_key=/app/maxscale/ssl/idtumaxenc_key.key
+		ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+		###############################################################
+		## Listener definitions
+		###############################################################
+		[Read-Write-Listener]
+		type=listener
+		service=Read-Write-Service
+		protocol=MariaDBClient
+		port=xxxx
+		ssl=true
+		ssl_cert=/app/maxscale/ssl/idtumdbenc.pem
+		ssl_key=/app/maxscale/ssl/idtumdbenc_key.key
+		ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+		[Read-Only-Listener]
+		type=listener
+		service=Read-Only-Service
+		protocol=MariaDBClient
+		port=xxxx
+		ssl=true
+		ssl_cert=/app/maxscale/ssl/idtumdbenc.pem
+		ssl_key=/app/maxscale/ssl/idtumdbenc_key.key
+		ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+
+	lxsplmdbusgv079:
+		###############################################################
+		## Server definitions
+		###############################################################
+		[Server1]
+		type=server
+		address=xxx.xxx.xxx.xxx
+		port=xxxx
+		protocol=MariaDBBackend
+		ssl=true
+		ssl_cert=/app/maxscale/ssl/idtumaxenc.pem
+		ssl_key=/app/maxscale/ssl/idtumaxenc_key.key
+		ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+		[Server2]
+		type=server
+		address=xxx.xxx.xxx.xxx
+		port=xxxx
+		protocol=MariaDBBackend
+		ssl=true
+		ssl_cert=/app/maxscale/ssl/idtumaxenc.pem
+		ssl_key=/app/maxscale/ssl/idtumaxenc_key.key
+		ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+		###############################################################
+		## Listener definitions
+		###############################################################
+		[Read-Write-Listener]
+		type=listener
+		service=Read-Write-Service
+		protocol=MariaDBClient
+		port=xxxx
+		ssl=true
+		ssl_cert=/app/maxscale/ssl/idtumdbenc.pem
+		ssl_key=/app/maxscale/ssl/idtumdbenc_key.key
+		ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+		[Read-Only-Listener]
+		type=listener
+		service=Read-Only-Service
+		protocol=MariaDBClient
+		port=xxxx
+		ssl=true
+		ssl_cert=/app/maxscale/ssl/idtumdbenc.pem
+		ssl_key=/app/maxscale/ssl/idtumdbenc_key.key
+		ssl_ca_cert=/app/maxscale/ssl/ca-cert.pem
+
+
+###########################################################################
+End: MariaDB TLS/SSL encryption
+###########################################################################
+
+
+
+
+
+#########################################################
+# Data-at-rest (TDE) encryption-specific settings
+#########################################################
+
+#Data-at-rest encryption (TDE using FKM)
+plugin_load_add = file_key_management
+file_key_management_filename = /pmariadb/mariadb.6033/DEK.enc
+file_key_management_filekey = FILE:/pmariadb/mariadb.6033/KEK.key
+file_key_management_encryption_algorithm = AES_CTR
+#innodb_encrypt_tables = OFF
+innodb_encrypt_tables = ON
+innodb_encryption_threads = 4
+innodb_encryption_rotate_key_age = 1
+innodb_encrypt_temporary_tables = ON
+#innodb_encrypt_temporary_tables = OFF
+innodb_encrypt_log = ON
+#innodb_encrypt_log = OFF
+encrypt_binlog = ON
+#encrypt_binlog = OFF
+
+#Data-in-transit encryption (TLS/SSL)
+ssl_cert=/mariadb/mariadb.6033/certs/server-cert.pem
+ssl_key=/mariadb/mariadb.6033/certs/server-key.pem
+ssl_ca=/mariadb/mariadb.6033/certs/ca-cert.pem
+#require_secure_transport=ON
+
+
+
+
+###########################################################################
+Start: MariaDB Data-at-rest encryption (Transparent Data Encryption - TDE)
+###########################################################################
+
+Notes:
+1. As per MariaDB documentation, using encryption has an overhead of roughly 3-5%
+2. Data at rest encryption is only supported in InnoDB and ExtraDB storage engine
+3. This setup uses File Key Management for key management
+4. FKM plugin supports 2 algorithms for encrypting data (AES_CBC & AES_CTR). AES_CTR is used here 
+5. Terminologies: DEK - Data Encryption Key, KEK - Key Encryption Key
+6. Resources:
+	https://mariadb.com/kb/en/data-at-rest-encryption-overview/	
+	https://mariadb.com/kb/en/file-key-management-encryption-plugin/
+	https://mariadb.com/kb/en/innodb-encryption-overview/
+7. Re-executed again on 27-Aug-2021
+
+
+Steps:
+1.	Create random 256-bit encryption key file using OpenSSL
+2.	Modify encryption key file to include encryption key IDs
+3.	Encrypt the key file using OpenSSL
+4.	Modify OS privilege of key files to read-only (owner)
+5.	Modify MariaDB config file to enable encryption
+6.	Verify and test encryption
+
+
+
+Commands:
+1. Create the encryption key file:
+	$ cd /pmariadb/mariadb.6033
+	$ for i in {1..3}; do openssl rand -hex 32 >> /pmariadb/mariadb.6033/DEK; done;
+
+2. Modify encryption key file and add key identifiers.
+   This will be referenced when creating encrypted tables as it's encryption key id:
+	$ cat keyfile
+	1;687a90b4423c10417f2483726a5901007571c16331d2ee9534333fef4e323075
+	2;e7bf20f1cbde9632587c2996871cff74871890d19b49e273d13def123d781e17
+	3;9284c9c80da9a323b3ac2c82427942dfbf1718b57255cc0bc0e2c3d6f15ac3ac
+
+3. Create a password file for encrypting the DEK key file:
+	$ openssl rand -hex 32 > /pmariadb/mariadb.6033/KEK.key
+
+
+4. Encrypt the key file by creating a random 256 character encryption password:
+	$ openssl enc -aes-256-cbc -md sha1  -pass file:/pmariadb/mariadb.6033/KEK.key -in /pmariadb/mariadb.6033/DEK -out /pmariadb/mariadb.6033/DEK.enc
+
+
+5. Delete clear text encryption key file:
+	rm /pmariadb/mariadb.6033/DEK
+
+6. Modify file permissions:
+    chmod 400 KEK.key DEK.enc
+
+7. Take backup of current database - 
+	80 - mariadb-full-backup-2021-09-01-15-05-10
+	81 - mariadb-full-backup-2021-09-01-15-23-27
+
+Check this:
+[00] 2021-09-01 15:05:14 Last binlog file /pmariabinlogs/mariadb-bin.000016, position 73390311
+/bin/mariabackup: Aria engine: starting recovery
+recovered pages: 0% 10% 20% 30% 41% 51% 62% 73% 84% 95% 100% (0.0 seconds); tables to flush: 3 2 1 0
+ (0.0 seconds);
+/bin/mariabackup: Aria engine: recovery done
+[00] 2021-09-01 15:05:14 completed OK!
+Null message body; hope that's ok
+
+
+8. Backup current server.cnf
+
+9. Modify config file:
+	#################### DATABASE ENCRYPTION ##############################
+	plugin_load_add = file_key_management
+	file_key_management_filename = /mariadb/mariadb.6033/DEK.enc
+	file_key_management_filekey = FILE:/mariadb/mariadb.6033/KEK.key
+	file_key_management_encryption_algorithm = AES_CTR
+	innodb_encrypt_tables = ON				# enable encryption for all tables. Can turn OFF and enable encryption per table is also allowed
+	innodb_encryption_threads = 4
+	innodb_encryption_rotate_key_age = 1
+	innodb_encrypt_temporary_tables = ON	# encrypt temporary tables
+	innodb_encrypt_log = ON					# encrypt InnoDB redo logs
+	encrypt_binlog = ON						# encrypt binlog
+
+	Note:
+	If the key file is encrypted, the FKM plugin requires also the "file_key_management_filekey" system variables to be configured
+	The file_key_management_filekey system variable can be provided in two forms:
+		It can be the actual plain-text encryption password (not recommended)
+		If it is prefixed with FILE:, then it can be a path to a file that contains the plain-text encryption password
+
+10. Restart mariadb service
+
+11. Checking and verification:
+	show variables like '%encrypt%';
+
+	Output should be empty. Means all tables are encrypted:
+	select name, KEY_ROTATION_PAGE_NUMBER, KEY_ROTATION_MAX_PAGE_NUMBER from information_schema.innodb_tablespaces_encryption where min_key_version = 0 or ROTATING_OR_FLUSHING = 1;
+
+	Lookout for encryption_scheme=1 
+	select NAME,ENCRYPTION_SCHEME,MIN_KEY_VERSION,ROTATING_OR_FLUSHING from information_schema.innodb_tablespaces_encryption;
+
+
+	MariaDB [test]> CREATE TABLE a (i int) ENGINE=InnoDB ENCRYPTED=YES;
+	MariaDB [test]> CREATE TABLE b (i int) ENGINE=InnoDB;
+	MariaDB [test]> insert into a values(1),(2);
+	MariaDB [test]> insert into b values(1),(2);
+
+	select * from information_schema.innodb_tablespaces_encryption\G
+	select name,encryption_scheme,current_key_id from information_schema.innodb_tablespaces_encryption;
+
+
+How to decrypt the encrypted key file:
+	openssl enc -aes-256-cbc -d -in keyfile.enc.bkup -pass file:aes256.dat > samp.key
+	$ cat samp.key
+	1;8f1940fd23d8af2caad92e9a03d7822b9f08dabbebe83a51dc32a322eacc4069
+	2;56db3bfe98c61ef1b8d9e484b654fc8c680837830d979617c013ef8e7512dfc1
+	3;70e783c662071d818595e4fb70cc405a39aad5aa6a3e5c9a48bd2eae4b7debe0
+	$
+	$ cat keyfile
+	1;8f1940fd23d8af2caad92e9a03d7822b9f08dabbebe83a51dc32a322eacc4069
+	2;56db3bfe98c61ef1b8d9e484b654fc8c680837830d979617c013ef8e7512dfc1
+	3;70e783c662071d818595e4fb70cc405a39aad5aa6a3e5c9a48bd2eae4b7debe0
+
+
+
+###########################################################################
+End: MariaDB Data-at-rest encryption (Transparent Data Encryption - TDE)
+###########################################################################
+
+================================================
+End: SPL UAT Encryption Setup
+================================================
+
+
+
+
+
+
+
+
+
+================================================
+Start: SPL SIT Encryption Setup
+================================================
+
+Hostname: lxsplmdbtsgv85
+
+######################################
+Start: MariaDB Data-in-transit encryption (TLS/SSL)
+######################################
+
+Notes:
+1. Resource: https://mariadb.com/docs/security/encryption/in-transit/
+			 https://mariadb.com/kb/en/secure-connections-overview/
+			 https://mariadb.com/kb/en/securing-connections-for-client-and-server/
+2. Uses self-signed certificates generated using OpenSSL
+3. Executed 25 August 2021
+
+
+Steps:
+1. Create certificates & keys
+	Working Directory: /mariadb/mariadb.6033/ssl (old-/mariadb/mariadb.6033/certs)
+
+	A. Create CA certificate/keys
+		1. Generate a private key for the CA:
+			openssl genrsa 2048 > ca-key.pem
+
+		2. Generate the X509 certificate for the CA:
+			openssl req -new -x509 -nodes -days 365000 -key ca-key.pem -out ca-cert.pem
+		
+			Country Name (2 letter code) [XX]:SG
+			State or Province Name (full name) []:.
+			Locality Name (eg, city) [Default City]:SG-CA
+			Organization Name (eg, company) [Default Company Ltd]:UOB-CA
+			Organizational Unit Name (eg, section) []:UOB-CA
+			Common Name (eg, your name or your server's hostname) []:.
+			Email Address []:.
+
+	B. Create server certificate/keys
+		1. Generate the private key and certificate request:
+			openssl req -newkey rsa:2048 -nodes -days 365000 -keyout server-key.pem -out server-req.pem
+
+			Country Name (2 letter code) [XX]:SG
+			State or Province Name (full name) []:.
+			Locality Name (eg, city) [Default City]:SG-Server
+			Organization Name (eg, company) [Default Company Ltd]:UOB-Server
+			Organizational Unit Name (eg, section) []:UOB-Server
+			Common Name (eg, your name or your server's hostname) []:.
+			Email Address []:.
+
+			Please enter the following 'extra' attributes
+			to be sent with your certificate request
+			A challenge password []:SPL-Server
+			An optional company name []:UOB-Server
+
+		2. Generate the X509 certificate for the server:
+			openssl x509 -req -days 365000 -set_serial 01 -in server-req.pem -out server-cert.pem -CA ca-cert.pem -CAkey ca-key.pem
+		
+	C. Create client certificate/keys
+		1. Generate the private key and certificate request:
+			openssl req -newkey rsa:2048 -nodes -days 365000 -keyout client-key.pem -out client-req.pem
+
+			Country Name (2 letter code) [XX]:SG
+			State or Province Name (full name) []:.
+			Locality Name (eg, city) [Default City]:SG-Client
+			Organization Name (eg, company) [Default Company Ltd]:UOB-Client
+			Organizational Unit Name (eg, section) []:UOB-Client
+			Common Name (eg, your name or your server's hostname) []:.
+			Email Address []:.
+
+			Please enter the following 'extra' attributes
+			to be sent with your certificate request
+			A challenge password []:SPL-Client
+			An optional company name []:UOB-Client
+
+		2. Generate the X509 certificate for the client:
+			openssl x509 -req -days 365000 -set_serial 01 -in client-req.pem -out client-cert.pem -CA ca-cert.pem -CAkey ca-key.pem
+
+
+	D. Verify client/server certificates/keys
+		1. Verify the server/client certificates (must get an OK answer):
+
+			openssl verify -CAfile ca-cert.pem server-cert.pem client-cert.pem
+
+			server-cert.pem: OK
+			client-cert.pem: OK
+
+		2. Check the files created:
+			$ pwd
+			/mariadb/mariadb.6033/ssl
+			$ ls -la
+			total 40
+			drwxr-xr-x 2 mariadb gmariadb 4096 Aug 25 11:17 .
+			drwxr-xr-x 4 mariadb gmariadb 4096 Aug 25 11:02 ..
+			-rw-r--r-- 1 mariadb gmariadb 1184 Aug 25 11:11 ca-cert.pem
+			-rw-r--r-- 1 mariadb gmariadb 1675 Aug 25 11:08 ca-key.pem
+			-rw-r--r-- 1 mariadb gmariadb 1054 Aug 25 11:17 client-cert.pem
+			-rw-r--r-- 1 mariadb gmariadb 1704 Aug 25 11:17 client-key.pem
+			-rw-r--r-- 1 mariadb gmariadb  993 Aug 25 11:17 client-req.pem
+			-rw-r--r-- 1 mariadb gmariadb 1054 Aug 25 11:16 server-cert.pem
+			-rw-r--r-- 1 mariadb gmariadb 1704 Aug 25 11:13 server-key.pem
+			-rw-r--r-- 1 mariadb gmariadb  993 Aug 25 11:13 server-req.pem
+			$
+
+		3. Set read permissions:
+			$ pwd
+			/mariadb/mariadb.6033/ssl
+			$ chmod 400 *
+
+
+2. Configure MariaDB instance
+	
+	A. Enable TLS
+		[mariadb]
+		...
+		ssl_cert=/mariadb/mariadb.6033/certs/server-cert.pem
+		ssl_key=/mariadb/mariadb.6033/certs/server-key.pem
+		ssl_ca=/mariadb/mariadb.6033/certs/ca-cert.pem
+
+		Restart MariaDB
+		Verify have_ssl parameter is set to YES
+		show variables like 'have_ssl';
+
+	B. Require TLS:
+		[mariadb]
+		...
+		require_secure_transport=ON
+		
+		Set dynamically, no need to restart instance:
+			set global require_secure_transport=ON;
+			show variables like 'require_secure_transport';
+		Note: TLS/SSL encryption can be enabled/disabled by setting require_secure_transport (dynamic) ON/OFF
+
+	C. Checking and verification:
+		show variables like '%ssl%';
+		show variables like '%tls%';
+		show variables like 'require_secure_transport';
+
+
+3. Configure MaxScale
+	Working Directory: /app/maxscale/certs
+	Configure server:
+		[server1]
+		type     = server
+		address  = xxx.xxx.xxx.xxx
+		port     = xxxx
+		protocol = MariaDBBackend
+		ssl           = true
+		ssl_cert      = /certs/server-cert.pem
+		ssl_key       = /certs/server-key.pem
+		ssl_ca_cert   = /certs/ca-cert.pem
+
+	Configure listener:
+		[split-router-listener]
+		type     = listener
+		service  = split-router
+		protocol = MariaDBClient
+		port     = xxxx
+		ssl           = true
+		ssl_cert      = /certs/server-cert.pem
+		ssl_key       = /certs/server-key.pem
+		ssl_ca_cert   = /certs/ca-cert.pem
+	
+
+
+######################################
+End: MariaDB Data-in-transit encryption (TLS/SSL)
+######################################
+
+
+
+
+#########################################################
+# Encryption-specific settings
+#########################################################
+
+#Data-at-rest encryption (TDE using FKM)
+plugin_load_add = file_key_management
+file_key_management_filename = /mariadb/mariadb.6033/DEK.enc
+file_key_management_filekey = FILE:/mariadb/mariadb.6033/KEK.key
+file_key_management_encryption_algorithm = AES_CTR
+#innodb_encrypt_tables = OFF
+innodb_encrypt_tables = ON
+innodb_encryption_threads = 4
+innodb_encryption_rotate_key_age = 1
+innodb_encrypt_temporary_tables = ON
+#innodb_encrypt_temporary_tables = OFF
+innodb_encrypt_log = ON
+#innodb_encrypt_log = OFF
+encrypt_binlog = ON
+#encrypt_binlog = OFF
+
+#Data-in-transit encryption (TLS/SSL)
+ssl_cert=/mariadb/mariadb.6033/certs/server-cert.pem
+ssl_key=/mariadb/mariadb.6033/certs/server-key.pem
+ssl_ca=/mariadb/mariadb.6033/certs/ca-cert.pem
+#require_secure_transport=ON
+
+
+
+
+
+###########################################################################
+Start: MariaDB Data-at-rest encryption (Transparent Data Encryption - TDE)
+###########################################################################
+
+Notes:
+1. As per MariaDB documentation, using encryption has an overhead of roughly 3-5%
+2. Data at rest encryption is only supported in InnoDB and ExtraDB storage engine
+3. This setup uses File Key Management for key management
+4. FKM plugin supports 2 algorithms for encrypting data (AES_CBC & AES_CTR). AES_CTR is used here 
+5. Terminologies: DEK - Data Encryption Key, KEK - Key Encryption Key
+6. Resources:
+	https://mariadb.com/kb/en/data-at-rest-encryption-overview/	
+	https://mariadb.com/kb/en/file-key-management-encryption-plugin/
+	https://mariadb.com/kb/en/innodb-encryption-overview/
+7. Re-executed again on 27-Aug-2021
+
+
+Steps:
+1.	Create random 256-bit encryption key file using OpenSSL
+2.	Modify encryption key file to include encryption key IDs
+3.	Encrypt the key file using OpenSSL
+4.	Modify OS privilege of key files to read-only (owner)
+5.	Modify MariaDB config file to enable encryption
+6.	Verify and test encryption
+
+
+
+Commands:
+1. Create the encryption key file:
+	$ cd /mariadb/mariadb.6033
+	$ for i in {1..3}; do openssl rand -hex 32 >> /mariadb/mariadb.6033/DEK; done;
+
+2. Modify encryption key file and add key identifiers.
+   This will be referenced when creating encrypted tables as it's encryption key id:
+	$ cat keyfile
+	1;687a90b4423c10417f2483726a5901007571c16331d2ee9534333fef4e323075
+	2;e7bf20f1cbde9632587c2996871cff74871890d19b49e273d13def123d781e17
+	3;9284c9c80da9a323b3ac2c82427942dfbf1718b57255cc0bc0e2c3d6f15ac3ac
+
+3. Create a password file for encrypting the DEK key file:
+	$ openssl rand -hex 32 > /mariadb/mariadb.6033/KEK.key
+
+
+4. Encrypt the key file by creating a random 256 character encryption password:
+	$ openssl enc -aes-256-cbc -md sha1  -in /mariadb/mariadb.6033/DEK -out /mariadb/mariadb.6033/DEK.enc -pass file:/mariadb/mariadb.6033/KEK.key
+
+
+5. Delete clear text encryption key file:
+	rm /mariadb/mariadb.6033/DEK
+
+6. Modify file permissions:
+    chmod 400 KEK.key DEK.enc
+
+7. Take backup of current database
+
+8. Modify config file:
+	#################### DATABASE ENCRYPTION ##############################
+	plugin_load_add = file_key_management
+	file_key_management_filename = /mariadb/mariadb.6033/DEK.enc
+	file_key_management_filekey = FILE:/mariadb/mariadb.6033/KEK.key
+	file_key_management_encryption_algorithm = AES_CTR
+	innodb_encrypt_tables = ON				# enable encryption for all tables. Can turn OFF and enable encryption per table is also allowed
+	innodb_encryption_threads = 4
+	innodb_encryption_rotate_key_age = 1
+	innodb_encrypt_temporary_tables = ON	# encrypt temporary tables
+	innodb_encrypt_log = ON					# encrypt InnoDB redo logs
+	encrypt_binlog = ON						# encrypt binlog
+
+	Note:
+	If the key file is encrypted, the FKM plugin requires also the "file_key_management_filekey" system variables to be configured
+	The file_key_management_filekey system variable can be provided in two forms:
+		It can be the actual plain-text encryption password (not recommended)
+		If it is prefixed with FILE:, then it can be a path to a file that contains the plain-text encryption password
+
+9. Restart mariadb service
+
+10. Checking and verification:
+	show variables like '%encrypt%';
+
+	Output should be empty. Means all tables are encrypted:
+	select name, KEY_ROTATION_PAGE_NUMBER, KEY_ROTATION_MAX_PAGE_NUMBER from information_schema.innodb_tablespaces_encryption where min_key_version = 0 or ROTATING_OR_FLUSHING = 1;
+
+	Lookout for encryption_scheme=1 
+	select NAME,ENCRYPTION_SCHEME,MIN_KEY_VERSION,ROTATING_OR_FLUSHING from information_schema.innodb_tablespaces_encryption;
+
+
+	MariaDB [test]> CREATE TABLE a (i int) ENGINE=InnoDB ENCRYPTED=YES;
+	MariaDB [test]> CREATE TABLE b (i int) ENGINE=InnoDB;
+	MariaDB [test]> insert into a values(1),(2);
+	MariaDB [test]> insert into b values(1),(2);
+
+	select * from information_schema.innodb_tablespaces_encryption\G
+	select name,encryption_scheme,current_key_id from information_schema.innodb_tablespaces_encryption;
+
+
+How to decrypt the encrypted key file:
+	openssl enc -aes-256-cbc -d -in keyfile.enc.bkup -pass file:aes256.dat > samp.key
+	$ cat samp.key
+	1;8f1940fd23d8af2caad92e9a03d7822b9f08dabbebe83a51dc32a322eacc4069
+	2;56db3bfe98c61ef1b8d9e484b654fc8c680837830d979617c013ef8e7512dfc1
+	3;70e783c662071d818595e4fb70cc405a39aad5aa6a3e5c9a48bd2eae4b7debe0
+	$
+	$ cat keyfile
+	1;8f1940fd23d8af2caad92e9a03d7822b9f08dabbebe83a51dc32a322eacc4069
+	2;56db3bfe98c61ef1b8d9e484b654fc8c680837830d979617c013ef8e7512dfc1
+	3;70e783c662071d818595e4fb70cc405a39aad5aa6a3e5c9a48bd2eae4b7debe0
+
+
+
+###########################################################################
+End: MariaDB Data-at-rest encryption (Transparent Data Encryption - TDE)
+###########################################################################
+
+
+
+SIT issue encountered:
+2021-07-09 10:21:30 0 [Note] /usr/sbin/mysqld (initiated by: unknown): Normal shutdown
+2021-07-09 10:21:30 0 [Note] Event Scheduler: Purging the queue. 0 events
+2021-07-09 10:21:30 0 [Note] InnoDB: FTS optimize thread exiting.
+2021-07-09 10:21:30 server_audit: STOPPED
+2021-07-09 10:21:30 0 [Note] InnoDB: Starting shutdown...
+2021-07-09 10:21:30 0 [Note] InnoDB: Dumping buffer pool(s) to /mariadata/ib_buffer_pool
+2021-07-09 10:21:30 0 [Note] InnoDB: Buffer pool(s) dump completed at 210709 10:21:30
+2021-07-09 10:21:32 0 [Note] InnoDB: Shutdown completed; log sequence number 373317810; transaction id 72275
+2021-07-09 10:21:32 0 [Note] InnoDB: Removed temporary tablespace data file: "ibtmp1"
+2021-07-09 10:21:32 0 [Note] /usr/sbin/mysqld: Shutdown complete
+
+2021-07-09 10:21:32 0 [ERROR] mysqld: Cannot decrypt /mariadb/mariadb.6033/keyfile.enc. Wrong key?
+2021-07-09 10:21:32 0 [ERROR] Plugin 'file_key_management' init function returned error.
+2021-07-09 10:21:32 0 [ERROR] Plugin 'file_key_management' registration as a ENCRYPTION failed.
+2021-07-09 10:21:32 0 [ERROR] InnoDB: cannot enable encryption, encryption plugin is not available
+2021-07-09 10:21:32 0 [ERROR] Plugin 'InnoDB' init function returned error.
+2021-07-09 10:21:32 0 [ERROR] Plugin 'InnoDB' registration as a STORAGE ENGINE failed.
+2021-07-09 10:21:32 0 [Note] Plugin 'FEEDBACK' is disabled.
+2021-07-09 10:21:32 server_audit: server_audit_incl_users set to 'root,mariadb,idtpadm'.
+2021-07-09 10:21:32 server_audit: MariaDB Audit Plugin version 1.4.8 STARTED.
+2021-07-09 10:21:32 server_audit: logging started to the file /mariaaudlogs/audit.log.
+2021-07-09 10:21:32 0 [ERROR] Unknown/unsupported storage engine: InnoDB
+2021-07-09 10:21:32 0 [ERROR] Aborting
+2021-07-09 10:21:32 server_audit: STOPPED
+
+
+
+
+
+
+
+######################################
+Start: How to disable encryption
+######################################
+
+Notes:
+1. Executed 20 August 2021
+2. Resource: https://mariadb.com/kb/en/disabling-innodb-encryption/
+
+3. Important!!!: Turning off the relevant system variables doesn't decrypt the tables.
+   If you turn it off and remove the encryption key management plugin, it'll render the encrypted data inaccessible.
+
+
+1. Disable Encryption for Automatically Encrypted Tablespaces
+
+	a. Create mariadb backup
+	a. Verify status of encryption:
+	   	show variables like '%encrypt%';
+
+        select name, KEY_ROTATION_PAGE_NUMBER, KEY_ROTATION_MAX_PAGE_NUMBER from information_schema.innodb_tablespaces_encryption where min_key_version = 0 or ROTATING_OR_FLUSHING = 1;
+		select NAME,ENCRYPTION_SCHEME,MIN_KEY_VERSION,ROTATING_OR_FLUSHING from information_schema.innodb_tablespaces_encryption;
+
+		As can be seen, all tablespaces use ENCRYPTION_SCHEME=1 (encrypted) and MIN_KEY_VERSION=1. After this phase, the database administrator 
+		should consider decreasing the number of used encryption threads and rotation iops. Furthermore, the need for further key rotation 
+		should be also considered as the file key management plugin does not support real key rotation. Key rotation can be disabled using 
+		innodb-encryption-rotate-key-age=0. Note that even with that setup, all new tables created are considered for encryption.
+
+
+	a. Set the innodb_encrypt_tables system variable to OFF
+		SET GLOBAL innodb_encrypt_tables = OFF;
+	b. Set the innodb_encryption_threads system variable to a non-zero value:
+		SET GLOBAL innodb_encryption_threads = 4;
+	c. Set the innodb_encryption_rotate_key_age system variable to 1:
+		SET GLOBAL innodb_encryption_rotate_key_age = 1;
+	d. Check decryption status:
+	   Note: Once the count reaches 0, then all of your InnoDB tablespaces are unencrypted
+		select count(*) as "number of encrypted tablespaces"
+		from information_schema.innodb_tablespaces_encryption
+		where encryption_scheme != 0 or rotating_or_flushing != 0;
+
+		select * from information_schema.innodb_tablespaces_encryption where min_key_version != 0;
+
+		select * from information_schema.innodb_tablespaces_encryption where min_key_version != 0 or rotating_or_flushing = 1;
+ 
+		select name, encryption_scheme, current_key_id
+		from information_schema.innodb_tablespaces_encryption;
+
+2. Disable Encryption for Manually Encrypted Tablespaces
+
+	a. Query the Information Schema TABLES table to find the encrypted tables:
+		select table_schema as "database", table_name as "table"
+		from information_schema.tables
+		where engine='innodb' and create_options like '%`encrypted`=yes%';
+	b. For each table in the result-set, issue an ALTER TABLE statement, setting the ENCRYPTED table option to NO
+	c. Checking:
+		select name, encryption_scheme, current_key_id
+		from information_schema.innodb_tablespaces_encryption;
+
+
+Note: Do steps 3,4,5 separately & stopping/starting the instance at each step
+
+3. Disable Encryption for Temporary Tablespaces
+
+	To disable, remove innodb_encrypt_temporary_tables system variable from option file, and then restart the server.
+
+4. Disable Encryption for the Redo Log
+   Notes: InnoDB uses the Redo Log in crash recovery. By default, these events are written to file in an unencrypted state.
+          In removing data-at-rest encryption for InnoDB, be sure to also disable encryption for the Redo Log before removing 
+		  encryption key settings. Otherwise the Redo Log can become inaccessible without the encryption keys.
+
+	a. Check the value of the innodb_fast_shutdown system variable with the SHOW VARIABLES statement
+	   Notes: When the value is set to 2, InnoDB performs an unclean shutdown, so it will need the Redo Log at the next server startup.
+	   Ensure that the variable is set to 0, 1, or 3. For performance reasons, 1 is usually the best option.
+	   It can be changed dynamically with SET GLOBAL.
+		SHOW VARIABLES LIKE 'innodb_fast_shutdown';
+		SET GLOBAL innodb_fast_shutdown = 1;
+
+	b. Set the innodb_encrypt_log system variable to OFF in option file. Once this is done, restart the MariaDB Server
+
+
+5. Encrypting/decrypting Binary Logs
+   Resource: https://mariadb.com/kb/en/encrypting-binary-logs/
+
+	a. Enabling Encryption
+		First, stop the server.
+		Then, set encrypt_binlog=ON in the MariaDB configuration file.
+		Then, start the server.
+	   From that point forward, any new binary logs will be encrypted. To delete old unencrypted binary logs, you can use RESET MASTER or PURGE BINARY LOGS
+	
+	b. Disabling Encryption
+		First, stop the server.
+		Then, set encrypt_binlog=OFF in the MariaDB configuration file.
+		Then, start the server.
+
+6. Option file entries for encryption should look like below:
+		plugin_load_add = file_key_management
+		file_key_management_filename = /mariadb/mariadb.6033/keyfile.enc
+		file_key_management_filekey = FILE:/mariadb/mariadb.6033/aes256.dat
+		file_key_management_encryption_algorithm = aes_cbc
+		innodb_encrypt_tables = OFF
+		#innodb_encrypt_tables = ON
+		innodb_encryption_threads = 4
+		innodb_encryption_rotate_key_age = 1
+		#innodb_encrypt_temporary_tables = ON
+		innodb_encrypt_temporary_tables = OFF
+		#innodb_encrypt_log = ON
+		innodb_encrypt_log = OFF
+		#encrypt_binlog = ON
+		encrypt_binlog = OFF
+
+
+######################################
+End: How to disable encryption
+######################################
+
+
+
+
+
+
+
+================================================
+End: SPL SIT Encryption Setup
+================================================
+
+
+
+Meeting with Swami & Ravi:
+1.	Configure monitoring of encryption key file – App Team, GIS
+		id - confirm with GIS
+2.	Test data creation and verification – App Team
+3.	Encryption key file creation & MariaDB encryption configuration – Aries
+		location
+		filename
+		openssl - generate 64-bit
+		configure mariadb
+4.	Testing & verification – App Team, Aries
+		Look at data in tables
+		Look at the idb files
+		Look at the binlog files
