@@ -1,7 +1,7 @@
 # MariaDB / MySQL Admin Scripts
 
 # Description
-A collection of **automation scripts** for **MariaDB** and **MySQL** database administration — including **full backups**, **incremental backups**, 
+My repository of **automation scripts** for **MariaDB** and **MySQL** database administration — including **full backups**, **incremental backups**, 
 and **health or performance reports**. These scripts are optimized for **Linux servers** and can be easily integrated with **cron** or any commercial automation tool, such as Chef/Puppet, for automatic execution.
 
 # Requirements
