@@ -19,6 +19,20 @@ Make sure the following are defined either in your environment or inside each sc
    - export MYSQL_HOST="localhost"
    - export BACKUP_BASE="/var/backups/mysql"
 
+# Directory Structure
+Recommended layout for organizing backups, logs, and reports:
+   - /var/backups/
+   - ├── mysql/
+      - ├── full/                # Full database dumps
+      - ├── incremental/         # Incremental/binlog backups
+      - ├── logs/                # Backup logs
+      - └── reports/             # Health and performance reports
+   - └── scripts/
+      - ├── mysql_full_backup.sh
+      - ├── mysql_incremental_backup.sh
+      - ├── mysql_health_report.sh
+      - └── etc.
+
 # Repository Contents (for updating)
 
 | Script Name                   | Description                                                                                                   |
