@@ -19,7 +19,7 @@ Make sure the following are defined either in your environment or inside each sc
    - export MYSQL_HOST="localhost"
    - export BACKUP_BASE="/var/backups/mysql"
 
-# Repository Contents
+# Repository Contents (for updating)
 
 | Script Name                   | Description                                                                                                   |
 |-------------------------------|---------------------------------------------------------------------------------------------------------------|
